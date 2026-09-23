@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Athlete Profile</title>
+<style>
+
+  /* ============================================================
+     COLOR & STYLE VARIABLES
+     Change any value here to re-theme the entire page at once.
+     ============================================================ */
+  :root{
+    --bg:#111111;         /* main background — black */
+    --panel:#1c1c1c;      /* card / tile background */
+    --ink:#f5f5f2;        /* main text color (off-white) */
+    --ink-soft:#b3b0a9;   /* secondary/dim text color */
+    --line:#333333;       /* thin border/divider color */
+    --accent:#ff2d78;     /* athletic accent — bold pink */
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    font-family:'Arial Black', Arial, Helvetica, sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:60px 20px 60px;
+  }
+
+  .page{
+    width:100%;
+    max-width:420px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  /* ------------------------------------------------------------
+     PROFILE PHOTO (circle at top)
+     ------------------------------------------------------------ */
+  .avatar{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    background:var(--panel);
+    border:3px solid var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:Arial, sans-serif;
+    font-size:13px;
+    letter-spacing:1px;
+    color:var(--ink-soft);
+    overflow:hidden;
+    margin-bottom:24px;
+  }
+  .avatar img{width:100%;height:100%;object-fit:cover;}
+
+  /* ------------------------------------------------------------
+     NAME + TAGLINE
+     ------------------------------------------------------------ */
+  h1{
+    font-weight:900;
+    font-size:30px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    font-style:italic;         /* gives the dynamic "athletic" slant */
+    margin:0 0 6px;
+  }
+  .role{
+    color:var(--accent);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  .rule{
+    width:50px;
+    height:3px;
+    background:var(--accent);
+    margin-bottom:22px;
+  }
+  .bio{
+    color:var(--ink-soft);
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight:400;
+    font-style:normal;
+    font-size:15px;
+    line-height:1.6;
+    max-width:300px;
+    margin-bottom:36px;
+  }
+
+  /* ------------------------------------------------------------
+     LINK BUTTONS SECTION
+     Each button is a plain <a> tag — just change the href="" value.
+     ------------------------------------------------------------ */
+  .links{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:48px;
+  }
+  a.link-btn{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:14px;
+    width:100%;
+    padding:10px 20px;
+    text-decoration:none;
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    clip-path:polygon(4% 0,100% 0,96% 100%,0% 100%); /* slanted "speed" edge */
+    transition:transform .15s ease, background .15s ease;
+  }
+
+  /* Small round photo slot on the left side of a link button.
+     Add your own image with: <img src="telegram-photo.jpg" alt=""> */
+  .link-icon{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    flex-shrink:0;
+    background:rgba(0,0,0,.25);
+    border:2px solid rgba(255,255,255,.25);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:9px;
+    letter-spacing:0;
+    text-transform:none;
+    color:inherit;
+    opacity:.7;
+  }
+  .btn-outline .link-icon{ border-color:var(--line); }
+  .link-icon img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* Text takes up the remaining space and stays centered in that space */
+  .link-text{
+    flex:1;
+    text-align:center;
+    padding-right:44px; /* balances the icon's width so text looks centered */
+  }
+  a.link-btn:hover{ transform:translateY(-2px); }
+  a.link-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+  .btn-solid{
+    background:var(--accent);
+    color:#111111;
+  }
+  .btn-outline{
+    background:transparent;
+    color:var(--ink);
+    border:2px solid var(--ink);
+  }
+  .btn-outline:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* ------------------------------------------------------------
+     PHOTO GALLERY SECTION (3 tiles, each is a clickable link)
+     ------------------------------------------------------------ */
+  .gallery-section{ width:100%; }
+  .gallery-label{
+    text-align:left;
+    color:var(--ink-soft);
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    margin-bottom:12px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+  .gallery a.tile{
+    display:block;
+    aspect-ratio:3/4;
+    background:var(--panel);
+    border:1px solid var(--line);
+    overflow:hidden;
+    text-decoration:none;
+    position:relative;
+  }
+  .gallery a.tile img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  /* Text shown only if a tile has no image yet — remove once you add photos */
+  .gallery a.tile .placeholder-label{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink-soft);
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+
+  footer{
+    margin-top:52px;
+    color:var(--ink-soft);
+    font-size:11px;
+    letter-spacing:1px;
+    opacity:.6;
+  }
+
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ============================================================
+         PROFILE PHOTO
+         Replace the text "PHOTO" below with an <img> tag, e.g.:
+         <img src="your-photo.jpg" alt="Name Surname">
+         ============================================================ -->
+    <div class="avatar">
+      PHOTO
+    </div>
+
+    <!-- ============================================================
+         NAME + ROLE + BIO
+         Edit the text directly — no other code needs to change.
+         ============================================================ -->
+    <h1>Name Surname</h1>
+    <div class="role">Athlete</div>
+    <div class="rule"></div>
+    <p class="bio">
+      Professional athlete. For bookings, collabs and inquiries, reach out
+      through the links below.
+    </p>
+
+    <!-- ============================================================
+         LINK BUTTONS
+         Only the href="..." value needs to change for each link.
+         Keep the text between the tags, or change it too if you like.
+         ============================================================ -->
+    <div class="links">
+
+      <!-- Telegram button
+           To add a photo: uncomment the <img> line below and set its
+           src to your image file. Then delete the "TG" placeholder text. -->
+      <a class="link-btn btn-solid" href="https://t.me/yourusername" target="_blank" rel="noopener">
+        <span class="link-icon">
+          TG
+          <!-- <img src="telegram-photo.jpg" alt=""> -->
+        </span>
+        <span class="link-text">Telegram</span>
+      </a>
+
+      <!-- Stacked button
+           Same idea: uncomment the <img> line and point it at your image. -->
+      <a class="link-btn btn-outline" href="https://stacked.com/yourprofile" target="_blank" rel="noopener">
+        <span class="link-icon">
+          ST
+          <!-- <img src="stacked-photo.jpg" alt=""> -->
+        </span>
+        <span class="link-text">Stacked</span>
+      </a>
+
+    </div>
+
+    <!-- ============================================================
+         PHOTO GALLERY — 3 tiles
+         Each tile is a full <a> link, so tapping the photo opens
+         wherever you set href="..." to.
+         To add a real photo: put an <img> tag inside the <a>, like:
+
+           <a class="tile" href="https://your-link.com" target="_blank" rel="noopener">
+             <img src="photo1.jpg" alt="">
+           </a>
+
+         Delete the <span class="placeholder-label">...</span> line
+         once you've added a real image — it's just a placeholder.
+         ============================================================ -->
+    <div class="gallery-section">
+      <div class="gallery-label">Gallery</div>
+      <div class="gallery">
+
+        <a class="tile" href="#" target="_blank" rel="noopener">
+          <span class="placeholder-label">Photo 1</span>
+          <!-- <img src="photo1.jpg" alt=""> -->
+        </a>
+
+        <a class="tile" href="#" target="_blank" rel="noopener">
+          <span class="placeholder-label">Photo 2</span>
+          <!-- <img src="photo2.jpg" alt=""> -->
+        </a>
+
+        <a class="tile" href="#" target="_blank" rel="noopener">
+          <span class="placeholder-label">Photo 3</span>
+          <!-- <img src="photo3.jpg" alt=""> -->
+        </a>
+
+      </div>
+    </div>
+
+    <footer>© 2026 Name Surname</footer>
+  </div>
+</body>
+</html>
